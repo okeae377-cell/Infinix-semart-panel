@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#090d16">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Infinix Smart Panel (Android 16)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            background-color: #050811;
+        }
+        .glow-cyan { box-shadow: 0 0 25px rgba(6, 182, 212, 0.25); }
+        .glow-green { box-shadow: 0 0 25px rgba(16, 185, 129, 0.25); }
+        ::-webkit-scrollbar { width: 3px; height: 3px; }
+        ::-webkit-scrollbar-track { background: #090d16; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        .animate-pulse-slow { animation: pulse-slow 3s infinite ease-in-out; }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between select-none overflow-x-hidden">
+
+    <!-- Mobile App Wrapper -->
+    <div id="app" class="max-w-md w-full mx-auto bg-[#090d16] min-h-screen flex flex-col shadow-2xl relative overflow-hidden border-x border-slate-800/80 pb-24">
+
+        <!-- Header Status Bar -->
+        <header class="bg-[#090d16]/95 backdrop-blur-md sticky top-0 z-30 px-4 py-3.5 border-b border-slate-800/80 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-600 via-teal-500 to-emerald-400 flex items-center justify-center font-black text-lg shadow-lg shadow-cyan-950 text-white">X</div>
+                <div>
+                    <h1 class="font-extrabold text-xs tracking-wider text-cyan-400">XOS SMART PANEL</h1>
+                    <p class="text-[10px] text-slate-400 font-medium">Infinix Smart 20 • Android 16</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2 text-xs">
+                <div class="bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700/60 flex items-center space-x-1.5 shadow-inner">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span class="font-bold text-emerald-300 text-[11px]" id="header-battery">88%</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="main-content" class="flex-1 overflow-y-auto p-4 space-y-4">
+            <!-- Dynamic Tab Content -->
+        </main>
+
+        <!-- Floating Smart Ball (Tombol Bola Pintar Samping) -->
+        <div id="smart-ball" onclick="toggleSmartBallMenu(); playAudio('click');" class="fixed right-3 bottom-28 w-13 h-13 rounded-full bg-gradient-to-tr from-cyan-500 to-teal-400 text-slate-950 flex items-center justify-center font-black text-xl shadow-2xl shadow-cyan-500/40 z-40 cursor-pointer border-2 border-cyan-200/50 active:scale-90 transition-transform">
+            ⚡
+        </div>
+
+        <!-- Smart Ball Popup Menu -->
+        <div id="smart-ball-menu" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end justify-center pb-28 px-4 animate-fade-in" onclick="if(event.target === this) toggleSmartBallMenu()">
+            <div class="bg-[#0f172a] border border-cyan-500/30 rounded-3xl w-full max-w-sm p-5 shadow-2xl space-y-3">
+                <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+                    <h3 class="font-bold text-xs text-cyan-400 tracking-wider uppercase">Menu Pintas Cepat</h3>
+                    <button onclick="toggleSmartBallMenu()" class="text-slate-400 text-xs hover:text-white">✕</button>
+                </div>
+                <div class="grid grid-cols-4 gap-2.5 pt-1">
+                    <button onclick="toggleSmartBallMenu(); boostRam();" class="flex flex-col items-center bg-slate-900/80 hover:bg-slate-800 p-3 rounded-2xl border border-slate-800 transition-all">
+                        <span class="text-xl">🚀</span>
+                        <span class="text-[10px] font-bold text-slate-300 mt-1">Boost</span>
+                    </button>
+                    <button onclick="toggleSmartBallMenu(); toggleTorch();" class="flex flex-col items-center bg-slate-900/80 hover:bg-slate-800 p-3 rounded-2xl border border-slate-800 transition-all">
+                        <span class="text-xl">🔦</span>
+                        <span class="text-[10px] font-bold text-slate-300 mt-1">Senter</span>
+                    </button>
+                    <button onclick="toggleSmartBallMenu(); switchTab('tools');" class="flex flex-col items-center bg-slate-900/80 hover:bg-slate-800 p-3 rounded-2xl border border-slate-800 transition-all">
+                        <span class="text-xl">📝</span>
+                        <span class="text-[10px] font-bold text-slate-300 mt-1">Catatan</span>
+                    </button>
+                    <button onclick="toggleSmartBallMenu(); takeScreenshotSim();" class="flex flex-col items-center bg-slate-900/80 hover:bg-slate-800 p-3 rounded-2xl border border-slate-800 transition-all">
+                        <span class="text-xl">📸</span>
+                        <span class="text-[10px] font-bold text-slate-300 mt-1">SS Layar</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Dialog -->
+        <div id="modal-container" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div id="modal-box" class="bg-[#0f172a] border border-slate-700/80 rounded-3xl max-w-sm w-full p-6 shadow-2xl transform transition-all scale-95 opacity-0">
+                <!-- Dynamic Modal Content -->
+            </div>
+        </div>
+
+        <!-- Bottom Navigation Bar -->
+        <nav class="absolute bottom-0 left-0 right-0 bg-[#090d16]/95 backdrop-blur-xl border-t border-slate-800/80 px-3 py-2.5 z-30 flex justify-around items-center shadow-2xl">
+            <button onclick="switchTab('dashboard'); playAudio('click');" id="nav-dashboard" class="flex flex-col items-center py-1.5 px-4 rounded-2xl transition-all text-cyan-400 bg-slate-800/90 shadow-md">
+                <span class="text-xl">🎛️</span>
+                <span class="text-[10px] font-bold mt-0.5 tracking-wide">Panel</span>
+            </button>
+            <button onclick="switchTab('booster'); playAudio('click');" id="nav-booster" class="flex flex-col items-center py-1.5 px-4 rounded-2xl transition-all text-slate-400 hover:text-slate-200">
+                <span class="text-xl">⚡</span>
+                <span class="text-[10px] font-bold mt-0.5 tracking-wide">Booster</span>
+            </button>
+            <button onclick="switchTab('tools'); playAudio('click');" id="nav-tools" class="flex flex-col items-center py-1.5 px-4 rounded-2xl transition-all text-slate-400 hover:text-slate-200">
+                <span class="text-xl">🧰</span>
+                <span class="text-[10px] font-bold mt-0.5 tracking-wide">Alat</span>
+            </button>
+            <button onclick="switchTab('device'); playAudio('click');" id="nav-device" class="flex flex-col items-center py-1.5 px-4 rounded-2xl transition-all text-slate-400 hover:text-slate-200">
+                <span class="text-xl">📱</span>
+                <span class="text-[10px] font-bold mt-0.5 tracking-wide">Info HP</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Torch Flashlight Overlay Simulation -->
+    <div id="torch-overlay" class="hidden fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
+        <div class="text-slate-950 text-center space-y-4">
+            <span class="text-6xl animate-bounce">🔦</span>
+            <h2 class="font-extrabold text-xl">Senter Aktif (Layar Terang Maksimal)</h2>
+            <button onclick="toggleTorch()" class="bg-slate-900 text-white font-bold px-6 py-3 rounded-2xl text-sm shadow-xl">Matikan Senter</button>
+        </div>
+    </div>
+
+    <script>
+        // --- AUDIO & HAPTIC ENGINE ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playAudio(type) {
+            try {
+                if (navigator.vibrate) navigator.vibrate(30);
+                if (!audioCtx) return;
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                let now = audioCtx.currentTime;
+                if (type === 'click') {
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.exponentialRampToValueAtTime(220, now + 0.04);
+                    gain.gain.setValueAtTime(0.06, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+                    osc.start(now);
+                    osc.stop(now + 0.04);
+                } else if (type === 'success') {
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.08);
+                    osc.frequency.setValueAtTime(783.99, now + 0.16);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                }
+            } catch(e) {}
+        }
+
+        // --- APP STATE ---
+        let appState = {
+            activeTab: 'dashboard',
+            ramUsage: 64, // percentage
+            battery: 88,
+            temperature: 36.4,
+            storageUsed: 74, // percentage
+            toggles: {
+                wifi: true,
+                bluetooth: true,
+                mobileData: true,
+                dnd: false,
+                powerSave: false,
+                gameMode: true
+            },
+            notes: [
+                { id: 1, title: 'Catatan Belanja', text: 'Beli aksesoris HP Infinix Smart 20' },
+                { id: 2, title: 'Ide Konten', text: 'Review performa gaming Android 16' }
+            ]
+        };
+
+        window.onload = function() {
+            switchTab('dashboard');
+        };
+
+        function switchTab(tab) {
+            appState.activeTab = tab;
+            ['dashboard', 'booster', 'tools', 'device'].forEach(t => {
+                const btn = document.getElementById(`nav-${t}`);
+                if (t === tab) {
+                    btn.className = "flex flex-col items-center py-1.5 px-4 rounded-2xl transition-all text-cyan-400 bg-slate-800/90 shadow-md";
+                } else {
+                    btn.className = "flex flex-col items-center py-1.5 px-4 rounded-2xl transition-all text-slate-400 hover:text-slate-200";
+                }
+            });
+            renderContent();
+        }
+
+        function renderContent() {
+            const container = document.getElementById('main-content');
+            container.innerHTML = "";
+
+            if (appState.activeTab === 'dashboard') {
+                renderDashboard(container);
+            } else if (appState.activeTab === 'booster') {
+                renderBooster(container);
+            } else if (appState.activeTab === 'tools') {
+                renderTools(container);
+            } else if (appState.activeTab === 'device') {
+                renderDevice(container);
+            }
+        }
+
+        // --- DASHBOARD TAB ---
+        function renderDashboard(container) {
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <!-- Quick Stat Cards -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-[#0f172a]/90 border border-slate-800 p-4 rounded-2xl shadow-md space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-400 font-medium">RAM Terpakai</span>
+                                <span class="text-xs font-bold text-cyan-400" id="ram-text">${appState.ramUsage}%</span>
+                            </div>
+                            <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
+                                <div id="ram-bar" class="bg-cyan-500 h-2 rounded-full transition-all duration-500" style="width: ${appState.ramUsage}%"></div>
+                            </div>
+                            <button onclick="boostRam()" class="w-full mt-1 bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 font-bold py-1.5 rounded-xl text-[11px] border border-cyan-500/30 transition-all">Bersihkan RAM</button>
+                        </div>
+
+                        <div class="bg-[#0f172a]/90 border border-slate-800 p-4 rounded-2xl shadow-md space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-400 font-medium">Suhu CPU</span>
+                                <span class="text-xs font-bold text-emerald-400">${appState.temperature}°C</span>
+                            </div>
+                            <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
+                                <div class="bg-emerald-500 h-2 rounded-full" style="width: 45%"></div>
+                            </div>
+                            <div class="text-[10px] text-slate-400 pt-1 font-medium flex items-center justify-between">
+                                <span>Status:</span>
+                                <span class="text-emerald-300 font-bold">Normal / Dingin</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Toggles Grid -->
+                    <div class="bg-[#0f172a]/90 border border-slate-800 p-4 rounded-2xl shadow-md space-y-3">
+                        <h2 class="font-bold text-xs text-slate-300 tracking-wider uppercase">Kontrol Cepat Sistem</h2>
+                        <div class="grid grid-cols-3 gap-2.5">
+                            ${renderToggleBtn('wifi', 'Wi-Fi', '🛜', appState.toggles.wifi)}
+                            ${renderToggleBtn('bluetooth', 'Bluetooth', '🦷', appState.toggles.bluetooth)}
+                            ${renderToggleBtn('mobileData', 'Data Seluler', '📶', appState.toggles.mobileData)}
+                            ${renderToggleBtn('dnd', 'Jangan Ganggu', '🔕', appState.toggles.dnd)}
+                            ${renderToggleBtn('powerSave', 'Hemat Daya', '🔋', appState.toggles.powerSave)}
+                            ${renderToggleBtn('gameMode', 'Game Turbo', '🎮', appState.toggles.gameMode)}
+                        </div>
+                    </div>
+
+                    <!-- Storage & Cleaner Banner -->
+                    <div class="bg-gradient-to-r from-cyan-950/40 to-[#0f172a] border border-cyan-500/30 p-4 rounded-2xl flex items-center justify-between shadow-lg">
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-extrabold px-2 py-0.5 bg-cyan-900/50 text-cyan-300 rounded-full border border-cyan-700/50">Infinix Storage</span>
+                            <h3 class="font-bold text-xs text-slate-100">Penyimpanan Internal (128GB)</h3>
+                            <p class="text-[11px] text-slate-400">${appState.storageUsed}% terpakai • Bersihkan file sampah</p>
+                        </div>
+                        <button onclick="cleanJunkFiles()" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-md shrink-0 active:scale-95 transition-transform">Pindai</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderToggleBtn(key, label, icon, isActive) {
+            return `
+                <button onclick="toggleSystem('${key}')" class="flex flex-col items-center justify-center p-3 rounded-2xl border transition-all ${isActive ? 'bg-cyan-950/60 border-cyan-500/50 text-cyan-300 shadow-sm' : 'bg-slate-900/60 border-slate-800 text-slate-400'}">
+                    <span class="text-xl mb-1">${icon}</span>
+                    <span class="text-[11px] font-bold text-center">${label}</span>
+                    <span class="text-[9px] font-semibold mt-0.5 ${isActive ? 'text-cyan-400' : 'text-slate-500'}">${isActive ? 'Aktif' : 'Mati'}</span>
+                </button>
+            `;
+        }
+
+        function toggleSystem(key) {
+            playAudio('click');
+            appState.toggles[key] = !appState.toggles[key];
+            renderContent();
+        }
+
+        function boostRam() {
+            playAudio('success');
+            appState.ramUsage = Math.max(32, appState.ramUsage - 25);
+            showMsg("RAM Berhasil Dioptimalkan! 🚀", "Sistem membersihkan file latar belakang dan membebaskan 1.4 GB memori RAM untuk performa mulus.");
+            renderContent();
+        }
+
+        function cleanJunkFiles() {
+            playAudio('success');
+            appState.storageUsed = Math.max(50, appState.storageUsed - 8);
+            showMsg("Pembersihan Selesai! 🧹", "Berhasil menghapus 850 MB cache dan file sampah aplikasi.");
+            renderContent();
+        }
+
+        // --- BOOSTER TAB ---
+        function renderBooster(container) {
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <div class="bg-gradient-to-r from-emerald-950/40 to-[#0f172a] border border-emerald-500/30 p-4 rounded-2xl shadow-lg space-y-2">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl">⚡</span>
+                            <h2 class="font-bold text-emerald-400 text-sm">XOS Game Booster & Turbo</h2>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">Maksimalkan frame rate (FPS) dan prioritaskan jaringan internet khusus untuk game favorit Anda di Infinix Smart 20.</p>
+                        <button onclick="launchGameBoost()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs shadow-lg shadow-emerald-950 active:scale-95 transition-transform mt-2">Mulai Akselerasi Game</button>
+                    </div>
+
+                    <div class="bg-[#0f172a]/90 border border-slate-800 p-4 rounded-2xl shadow-md space-y-3">
+                        <h3 class="font-bold text-xs text-slate-300 tracking-wider uppercase">Daftar Game Terdeteksi</h3>
+                        <div class="space-y-2.5">
+                            <div class="flex items-center justify-between p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-xl p-2 bg-slate-800 rounded-lg">🎮</span>
+                                    <div>
+                                        <h4 class="font-bold text-xs text-slate-100">Mobile Legends: Bang Bang</h4>
+                                        <p class="text-[10px] text-emerald-400 font-medium">Mode Turbo: Ultra FPS Aktif</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-bold bg-emerald-950 text-emerald-300 px-2.5 py-1 rounded-full border border-emerald-800">Siap</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-xl p-2 bg-slate-800 rounded-lg">🎯</span>
+                                    <div>
+                                        <h4 class="font-bold text-xs text-slate-100">Free Fire / PUBG Mobile</h4>
+                                        <p class="text-[10px] text-cyan-400 font-medium">Stabilitas Jaringan Dioptimalkan</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-bold bg-cyan-950 text-cyan-300 px-2.5 py-1 rounded-full border border-cyan-800">Siap</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function launchGameBoost() {
+            playAudio('success');
+            showMsg("Game Turbo Diaktifkan! 🎮🔥", "Semua sumber daya CPU & GPU dialokasikan penuh. Notifikasi mengganggu diblokir otomatis.");
+        }
+
+        // --- TOOLS TAB ---
+        function renderTools(container) {
+            let notesHtml = appState.notes.map((n, idx) => `
+                <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 flex justify-between items-start">
+                    <div>
+                        <h4 class="font-bold text-xs text-slate-200">${n.title}</h4>
+                        <p class="text-[11px] text-slate-400 mt-0.5">${n.text}</p>
+                    </div>
+                    <button onclick="deleteNote(${idx})" class="text-slate-500 hover:text-red-400 text-xs px-2">✕</button>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <!-- Quick Tools Grid -->
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="toggleTorch()" class="bg-[#0f172a] hover:bg-slate-800 border border-slate-800 p-3.5 rounded-2xl flex flex-col items-center justify-center space-y-2 transition-all shadow-sm">
+                            <span class="text-2xl">🔦</span>
+                            <span class="text-[11px] font-bold text-slate-200">Senter</span>
+                        </button>
+                        <button onclick="takeScreenshotSim()" class="bg-[#0f172a] hover:bg-slate-800 border border-slate-800 p-3.5 rounded-2xl flex flex-col items-center justify-center space-y-2 transition-all shadow-sm">
+                            <span class="text-2xl">📸</span>
+                            <span class="text-[11px] font-bold text-slate-200">Screenshot</span>
+                        </button>
+                        <button onclick="openCalculatorModal()" class="bg-[#0f172a] hover:bg-slate-800 border border-slate-800 p-3.5 rounded-2xl flex flex-col items-center justify-center space-y-2 transition-all shadow-sm">
+                            <span class="text-2xl">🧮</span>
+                            <span class="text-[11px] font-bold text-slate-200">Kalkulator</span>
+                        </button>
+                    </div>
+
+                    <!-- Quick Notes Section -->
+                    <div class="bg-[#0f172a]/90 border border-slate-800 p-4 rounded-2xl shadow-md space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-bold text-xs text-slate-300 tracking-wider uppercase">Catatan Cepat Smart Panel</h3>
+                            <button onclick="openAddNoteModal()" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] shadow-md active:scale-95 transition-transform">+ Catatan</button>
+                        </div>
+                        <div class="space-y-2 max-h-60 overflow-y-auto">
+                            ${notesHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function deleteNote(idx) {
+            playAudio('click');
+            appState.notes.splice(idx, 1);
+            renderContent();
+        }
+
+        function openAddNoteModal() {
+            openModal(`
+                <div class="space-y-3.5">
+                    <h3 class="font-bold text-base text-slate-100">Tambah Catatan Baru</h3>
+                    <input type="text" id="note-title" placeholder="Judul Catatan..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-cyan-500">
+                    <textarea id="note-text" placeholder="Tulis isi catatan di sini..." rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-cyan-500"></textarea>
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                        <button onclick="saveNewNote()" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-md">Simpan</button>
+                        <button onclick="closeModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs">Batal</button>
+                    </div>
+                </div>
+            `);
+        }
+
+        function saveNewNote() {
+            let title = document.getElementById('note-title').value.trim();
+            let text = document.getElementById('note-text').value.trim();
+            if (!title || !text) return;
+            appState.notes.push({ id: Date.now(), title, text });
+            closeModal();
+            playAudio('success');
+            renderContent();
+        }
+
+        // --- DEVICE INFO TAB ---
+        function renderDevice(container) {
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <div class="bg-[#0f172a]/90 border border-slate-800 p-4 rounded-2xl shadow-md space-y-3">
+                        <div class="flex items-center space-x-3 pb-3 border-b border-slate-800">
+                            <span class="text-3xl p-2.5 bg-cyan-950 rounded-2xl border border-cyan-800/50">📱</span>
+                            <div>
+                                <h2 class="font-bold text-sm text-cyan-400">Infinix Smart 20 Pro</h2>
+                                <p class="text-xs text-slate-400 font-medium">Android 16 • XOS 15.2 Smart Edition</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 text-xs">
+                            <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+                                <span class="text-slate-400 font-medium">Chipset Prosesor</span>
+                                <span class="font-bold text-slate-200">MediaTek Helio G99 Ultra</span>
+                            </div>
+                            <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+                                <span class="text-slate-400 font-medium">Kapasitas RAM</span>
+                                <span class="font-bold text-slate-200">8GB + 8GB Extended</span>
+                            </div>
+                            <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+                                <span class="text-slate-400 font-medium">Penyimpanan Internal</span>
+                                <span class="font-bold text-slate-200">128GB UFS 2.2</span>
+                            </div>
+                            <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+                                <span class="text-slate-400 font-medium">Kesehatan Baterai</span>
+                                <span class="font-bold text-emerald-400">100% (5000 mAh)</span>
+                            </div>
+                            <div class="flex justify-between py-1.5">
+                                <span class="text-slate-400 font-medium">Versi Panel Pintar</span>
+                                <span class="font-bold text-cyan-400">v16.2.0 Stable</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- UTILITY FUNCTIONS ---
+        function toggleTorch() {
+            playAudio('click');
+            const overlay = document.getElementById('torch-overlay');
+            overlay.classList.toggle('hidden');
+        }
+
+        function takeScreenshotSim() {
+            playAudio('success');
+            showMsg("Screenshot Berhasil! 📸", "Tangkapan layar disimpan ke Galeri album Infinix.");
+        }
+
+        function openCalculatorModal() {
+            openModal(`
+                <div class="space-y-3.5 text-center">
+                    <h3 class="font-bold text-base text-slate-100">Kalkulator Cepat</h3>
+                    <div id="calc-screen" class="bg-slate-950 p-3 rounded-xl text-right font-mono text-xl text-cyan-400 border border-slate-800">0</div>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button onclick="calcInput('7')" class="bg-slate-800 p-3 rounded-xl font-bold">7</button>
+                        <button onclick="calcInput('8')" class="bg-slate-800 p-3 rounded-xl font-bold">8</button>
+                        <button onclick="calcInput('9')" class="bg-slate-800 p-3 rounded-xl font-bold">9</button>
+                        <button onclick="calcInput('+')" class="bg-cyan-600 p-3 rounded-xl font-bold">+</button>
+                        <button onclick="calcInput('4')" class="bg-slate-800 p-3 rounded-xl font-bold">4</button>
+                        <button onclick="calcInput('5')" class="bg-slate-800 p-3 rounded-xl font-bold">5</button>
+                        <button onclick="calcInput('6')" class="bg-slate-800 p-3 rounded-xl font-bold">6</button>
+                        <button onclick="calcInput('-')" class="bg-cyan-600 p-3 rounded-xl font-bold">-</button>
+                        <button onclick="calcInput('1')" class="bg-slate-800 p-3 rounded-xl font-bold">1</button>
+                        <button onclick="calcInput('2')" class="bg-slate-800 p-3 rounded-xl font-bold">2</button>
+                        <button onclick="calcInput('3')" class="bg-slate-800 p-3 rounded-xl font-bold">3</button>
+                        <button onclick="calcClear()" class="bg-red-600/80 p-3 rounded-xl font-bold">C</button>
+                    </div>
+                    <button onclick="closeModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs mt-2">Tutup</button>
+                </div>
+            `);
+        }
+
+        let calcVal = "0";
+        function calcInput(val) {
+            playAudio('click');
+            if (calcVal === "0") calcVal = val;
+            else calcVal += val;
+            let scr = document.getElementById('calc-screen');
+            if (scr) scr.innerText = calcVal;
+        }
+        function calcClear() {
+            playAudio('click');
+            calcVal = "0";
+            let scr = document.getElementById('calc-screen');
+            if (scr) scr.innerText = calcVal;
+        }
+
+        function toggleSmartBallMenu() {
+            const menu = document.getElementById('smart-ball-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function openModal(htmlContent) {
+            const container = document.getElementById('modal-container');
+            const box = document.getElementById('modal-box');
+            box.innerHTML = htmlContent;
+            container.classList.remove('hidden');
+            setTimeout(() => {
+                box.className = "bg-[#0f172a] border border-slate-700/80 rounded-3xl max-w-sm w-full p-6 shadow-2xl transform transition-all scale-100 opacity-100";
+            }, 10);
+        }
+
+        function closeModal() {
+            const container = document.getElementById('modal-container');
+            const box = document.getElementById('modal-box');
+            box.className = "bg-[#0f172a] border border-slate-700/80 rounded-3xl max-w-sm w-full p-6 shadow-2xl transform transition-all scale-95 opacity-0";
+            setTimeout(() => {
+                container.classList.add('hidden');
+            }, 200);
+        }
+
+        function showMsg(title, message) {
+            openModal(`
+                <div class="text-center space-y-3.5">
+                    <h3 class="font-bold text-base text-slate-100">${title}</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">${message}</p>
+                    <button onclick="playAudio('click'); closeModal()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded-xl text-xs active:scale-95 transition-transform">Mengerti</button>
+                </div>
+            `);
+        }
+    </script>
+</body>
+</html>
